@@ -27,7 +27,7 @@ public class ClientConfiguration {
               + (!tokenFilePath.isAbsolute() ? "; absolute path: \""
               + tokenFilePath.toAbsolutePath() + "\"" : ""));
     }
-    String token = Files.readString(tokenFilePath);
+    String token = Files.readString(tokenFilePath).trim();
 
     GatewayDiscordClient discordClient = DiscordClientBuilder.create(token)
         .build()
