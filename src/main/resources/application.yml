@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    group:
+      default: development
+
+---
+spring:
+  config:
+    activate:
+      on-profile: development
+discord:
+  token:
+    filepath: "token"
+---
+spring:
+  config:
+    activate:
+      on-profile: container
+discord:
+  token:
+    filepath: "/mnt/secret/token"
