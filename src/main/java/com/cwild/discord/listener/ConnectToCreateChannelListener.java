@@ -1,6 +1,6 @@
 package com.cwild.discord.listener;
 
-import com.cwild.discord.service.CreateChannelService;
+import com.cwild.discord.service.ChannelService;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ConnectToCreateChannelListener extends EventListener<VoiceStateUpdateEvent> {
 
-  private final CreateChannelService createChannelService;
+  private final ChannelService channelService;
 
   @Override
   public Class<VoiceStateUpdateEvent> getEventType() {
@@ -23,13 +23,14 @@ public class ConnectToCreateChannelListener extends EventListener<VoiceStateUpda
   public Mono<Void> execute(VoiceStateUpdateEvent event) {
     return Mono.just(event)
         .filter(e -> e.isJoinEvent() || e.isMoveEvent())
-        .filterWhen(e -> createChannelService.isCreateChannel(e.getCurrent().getChannel()))
+        .filterWhen(e -> channelService.isCreateChannel(e.getCurrent().getChannel()))
         .flatMap(e -> e.getCurrent().getGuild()
-            .flatMap(createChannelService::createNewVoiceChannel)
+            .flatMap(channelService::createNewVoiceChannel)
             .doOnSuccess(nc -> log.info("Created voice channel {} ({}) in guild {}",
                 nc.getName(), nc.getId(), e.getCurrent().getGuildId())))
         .flatMap(newChannel -> event.getCurrent().getMember()
-            .flatMap(m -> m.edit(guildMemberEditSpec -> guildMemberEditSpec.setNewVoiceChannel(newChannel.getId()))))
+            .flatMap(m -> m.edit(
+                guildMemberEditSpec -> guildMemberEditSpec.setNewVoiceChannel(newChannel.getId()))))
         .flatMap(s -> Mono.empty());
   }
 }

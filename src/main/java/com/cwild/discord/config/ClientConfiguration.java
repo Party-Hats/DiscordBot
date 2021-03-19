@@ -22,8 +22,10 @@ public class ClientConfiguration {
   public <T extends Event> GatewayDiscordClient gatewayDiscordClient(List<EventListener<T>> eventListeners)
       throws IOException {
     if (!Files.exists(tokenFilePath)) {
-      throw new IllegalArgumentException("Could not find token file in path \"" + tokenFilePath + "\""
-      + (!tokenFilePath.isAbsolute() ? "; absolute path: \"" + tokenFilePath.toAbsolutePath() + "\"" : ""));
+      throw new IllegalArgumentException(
+          "Could not find token file in path \"" + tokenFilePath + "\""
+              + (!tokenFilePath.isAbsolute() ? "; absolute path: \""
+              + tokenFilePath.toAbsolutePath() + "\"" : ""));
     }
     String token = Files.readString(tokenFilePath);
 

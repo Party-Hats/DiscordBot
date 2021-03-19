@@ -1,8 +1,6 @@
 package com.cwild.discord.listener;
 
-import com.cwild.discord.service.CreateChannelService;
-import com.cwild.discord.service.RemoveChannelService;
-import discord4j.common.util.Snowflake;
+import com.cwild.discord.service.ChannelService;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.object.entity.channel.Channel;
 import java.util.Objects;
@@ -16,8 +14,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class DisconnectFromChannelListener extends EventListener<VoiceStateUpdateEvent> {
 
-  private final RemoveChannelService removeChannelService;
-  private final CreateChannelService createChannelService;
+  private final ChannelService channelService;
 
   @Override
   public Class<VoiceStateUpdateEvent> getEventType() {
@@ -30,11 +27,13 @@ public class DisconnectFromChannelListener extends EventListener<VoiceStateUpdat
         .filter(e -> e.isLeaveEvent() || e.isMoveEvent())
         .map(e -> e.getOld().orElse(null))
         .filter(Objects::nonNull)
-        .filterWhen(v -> createChannelService.isCreateChannel(v.getChannel())
-                .map(b -> !b))
-        .filterWhen(e -> removeChannelService.hasNoMembers(e.getChannel()))
+        .filterWhen(v -> channelService.isCreateChannel(v.getChannel())
+            .map(b -> !b))
+        .filterWhen(e -> channelService.hasNoMembers(e.getChannel()))
+        .filterWhen(e -> channelService.isLimited(e.getChannel()))
         .flatMap(e -> {
-          log.info("Deleting channel {} in guild {}", e.getChannelId().orElse(null), e.getGuildId());
+          log.info("Deleting channel {} in guild {}", e.getChannelId().orElse(null),
+              e.getGuildId());
           return e.getChannel().flatMap(Channel::delete);
         });
   }
