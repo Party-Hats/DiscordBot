@@ -1,7 +1,6 @@
-version: "3"
-
 services:
   DiscordBot:
+    build: .
     image: discord-bot:latest
     restart: unless-stopped
     volumes:
