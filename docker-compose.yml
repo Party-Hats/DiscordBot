@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  DiscordBot:
+    image: discord-bot:latest
+    restart: unless-stopped
+    volumes:
+      - .:/mnt/secret/
