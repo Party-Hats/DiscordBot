@@ -5,10 +5,8 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 @Configuration
-@DependsOn("radioConfiguration")
 public class EventListenerRegistration<T extends Event> {
 
   public EventListenerRegistration(
